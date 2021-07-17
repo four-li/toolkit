@@ -11,6 +11,8 @@ declare(strict_types=1);
  */
 namespace FourLi\Toolkit;
 
+use FourLi\Toolkit\Commands\MigrationCommand;
+
 class ConfigProvider
 {
     public function __invoke(): array
@@ -19,7 +21,9 @@ class ConfigProvider
             'dependencies' => [
             ],
             'commands' => [
+//                MigrationCommand::class
             ],
+            'listeners' => [],
             'annotations' => [
                 'scan' => [
                     'paths' => [
