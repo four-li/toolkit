@@ -45,6 +45,12 @@ class ConfigProvider
                     'source' => __DIR__ . '/../publish/migrations/ToolkitInitCdebug.php',
                     'destination' => $this->getMigrationFileName('cdebug'),
                 ],
+                [
+                    'id' => 'sqllog entity',
+                    'description' => 'sqllog entity magiration..',
+                    'source' => __DIR__ . '/../publish/migrations/ToolkitInitSqlLog.php',
+                    'destination' => $this->getMigrationFileName('sql_log'),
+                ],
             ],
         ];
     }
