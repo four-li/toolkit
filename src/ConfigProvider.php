@@ -54,8 +54,8 @@ class ConfigProvider
         $timestamp = date('Y_m_d_His');
         $filesystem = new Filesystem();
         return Collection::make(BASE_PATH . DIRECTORY_SEPARATOR . 'migrations' . DIRECTORY_SEPARATOR)
-            ->flatMap(function ($path) use ($filesystem) {
-                return $filesystem->glob($path . '*_create_permission_tables.php');
+            ->flatMap(function ($path) use ($filesystem, $server) {
+                return $filesystem->glob($path . '*_toolkit_init_' . $server . '.php');
             })->push(BASE_PATH . "/migrations/{$timestamp}_toolkit_init_" . $server . '.php')
             ->first();
     }

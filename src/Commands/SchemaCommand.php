@@ -64,8 +64,10 @@ class SchemaCommand extends HyperfCommand
 
     private function execGenModel()
     {
-        $this->output->title('执行生成模型命令 `./bin/console gen:model`中...');
-        $this->call('gen:model');
+        $this->output->title('执行生成模型命令 `./bin/console gen:model --path=app/Model/Toolkit`中...');
+        $this->call('gen:model', [
+            '--path' => 'app/Model/Toolkit',
+        ]);
         $this->output->info('gen:model完成');
     }
 

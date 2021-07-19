@@ -13,9 +13,10 @@ class ToolkitInitCdebug extends \FourLi\Toolkit\Components\MigrationSchema\BaseM
 {
     public function configure(): array
     {
-        $enable = config('toolkit.cdebug.db');
+        $enable = config('toolkit.cdebug') && config('toolkit.cdebug.db');
 
-        if ($enable !== true) {
+        if (! $enable) {
+            \FourLi\Toolkit\Utils::stdLogger('未开启toolkit.cdebug.db');
             return [];
         }
 
