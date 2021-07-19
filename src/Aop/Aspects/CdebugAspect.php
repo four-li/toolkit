@@ -16,9 +16,7 @@ use Hyperf\Di\Annotation\Aspect;
 use Hyperf\Di\Aop\ProceedingJoinPoint;
 use Hyperf\Utils\Codec\Json;
 
-/**
- * @Aspect
- */
+#[Aspect]
 class CdebugAspect extends \Hyperf\Di\Aop\AbstractAspect
 {
     public $annotations = [Cdebug::class];

@@ -7,14 +7,12 @@ declare(strict_types=1);
  * @link     https://www.open.ctl.pub
  * @document https://doc.open.ctl.pub
  */
+
 namespace FourLi\Toolkit\Aop\Annotations;
 
-/**
- * @Annotation
- * @Target({"METHOD"})
- *
- * 用于监控代码执行的元方法
- */
+use Attribute;
+
+#[Attribute(Attribute::TARGET_METHOD)]
 class Cdebug extends \Hyperf\Di\Annotation\AbstractAnnotation
 {
 }
