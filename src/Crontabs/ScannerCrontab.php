@@ -50,10 +50,15 @@ class ScannerCrontab
                     'full_sql' => $info['full_sql'] ?? '',
                 ];
             }
+
             if ($sqlLogs && $sqlDetailLogs) {
                 if (class_exists('SysToolkitSqllog') && class_exists('SysToolkitSqllogExt')) {
-                    Db::table(SysToolkitSqllog::getTableName())->insert($sqlLogs);
-                    Db::table(SysToolkitSqllogExt::getTableName())->insert($sqlDetailLogs);
+                    if (method_exists(SysToolkitSqllog::class, 'getTableName')) {
+                        Db::table(SysToolkitSqllog::getTableName())->insert($sqlLogs);
+                    }
+                    if (method_exists(SysToolkitSqllogExt::class, 'getTableName')) {
+                        Db::table(SysToolkitSqllogExt::getTableName())->insert($sqlDetailLogs);
+                    }
                 }
             }
         }

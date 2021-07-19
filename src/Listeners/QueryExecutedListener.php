@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace FourLi\Toolkit\Listeners;
 
 use FourLi\Toolkit\Utils;
+use Hyperf\Contract\ConfigInterface;
 use Hyperf\Database\Events\QueryExecuted;
 use Hyperf\Event\Contract\ListenerInterface;
 use Hyperf\Utils\Arr;
@@ -29,7 +30,7 @@ class QueryExecutedListener implements ListenerInterface
     public function process(object $event)
     {
         if ($event instanceof QueryExecuted) {
-            $profile = config('toolkit.sqllog');
+            $profile = Utils::container()->get(ConfigInterface::class)->get('toolkit.sqllog');
 
             if ($profile['sqllog'] !== true) {
                 return;
