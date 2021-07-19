@@ -1,7 +1,12 @@
 <?php
-declare(strict_types=1);
-// date: 2021/7/16 author: four-li
 
+declare(strict_types=1);
+/**
+ * You know, for fast.
+ *
+ * @link     https://www.open.ctl.pub
+ * @document https://doc.open.ctl.pub
+ */
 namespace FourLi\Toolkit\Components\MigrationSchema;
 
 interface MigrationInterface

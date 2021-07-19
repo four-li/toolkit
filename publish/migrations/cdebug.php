@@ -1,21 +1,28 @@
 <?php
 
 declare(strict_types=1);
-
 /**
+ * You know, for fast.
  *
- * You know, for faster
- *
+ * @link     https://www.open.ctl.pub
+ * @document https://doc.open.ctl.pub
  */
-
 use Hyperf\Database\Schema\Blueprint;
 
 class InitCdebug extends \FourLi\Toolkit\Components\MigrationSchema\BaseMigration
 {
     public function configure(): array
     {
+        $enable = config('toolkit.cdebug.db');
+
+        dump($enable);
+
+        if ($enable !== true) {
+            return [];
+        }
+
         return [
-            'sys_cdebug_log' => [
+            'sys_toolkit_cdebug' => [
                 'fn' => function (Blueprint $table) {
                     $table->comment('cdebug日志');
                     $this->_increment($table);
@@ -29,7 +36,7 @@ class InitCdebug extends \FourLi\Toolkit\Components\MigrationSchema\BaseMigratio
                     $this->_autoTimestramp($table);
                 },
             ],
-            'sys_cdebug_detail_log' => [
+            'sys_toolkit_cdebug_ext' => [
                 'fn' => function (Blueprint $table) {
                     $table->comment('cdebug日志分表详情');
                     $this->_increment($table);

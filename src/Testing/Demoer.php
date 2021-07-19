@@ -1,14 +1,18 @@
 <?php
+
 declare(strict_types=1);
-// date: 2021/7/16 author: four-li
-
+/**
+ * You know, for fast.
+ *
+ * @link     https://www.open.ctl.pub
+ * @document https://doc.open.ctl.pub
+ */
 namespace FourLi\Toolkit\Testing;
-
 
 class Demoer
 {
-    public static function test(){
+    public static function test()
+    {
         dump(1);
     }
-
 }

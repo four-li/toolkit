@@ -2,16 +2,15 @@
 
 declare(strict_types=1);
 /**
- * This file is part of Hyperf.
+ * You know, for fast.
  *
- * @link     https://www.hyperf.io
- * @document https://doc.hyperf.io
- * @contact  group@hyperf.io
- * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
+ * @link     https://www.open.ctl.pub
+ * @document https://doc.open.ctl.pub
  */
 namespace FourLi\Toolkit;
 
-use FourLi\Toolkit\Commands\MigrationCommand;
+use Hyperf\Utils\Collection;
+use Hyperf\Utils\Filesystem\Filesystem;
 
 class ConfigProvider
 {
@@ -21,7 +20,7 @@ class ConfigProvider
             'dependencies' => [
             ],
             'commands' => [
-//                MigrationCommand::class
+                //                MigrationCommand::class
             ],
             'listeners' => [],
             'annotations' => [
@@ -31,6 +30,32 @@ class ConfigProvider
                     ],
                 ],
             ],
+            'publish' => [
+                [
+                    'id' => 'toolkit config',
+                    'description' => 'The config for four-li/toolkit.',
+                    'source' => __DIR__ . '/../publish/toolkit.php',
+                    'destination' => BASE_PATH . '/config/autoload/toolkit.php',
+                ],
+                // 数据库 migrations
+                [
+                    'id' => 'cdebug entity',
+                    'description' => 'cdebug entity magiration..',
+                    'source' => __DIR__ . '/../publish/migrations/cdebug.php',
+                    'destination' => $this->getMigrationFileName('cdebug'),
+                ],
+            ],
         ];
+    }
+
+    protected function getMigrationFileName(string $server): string
+    {
+        $timestamp = date('Y_m_d_His');
+        $filesystem = new Filesystem();
+        return Collection::make(BASE_PATH . DIRECTORY_SEPARATOR . 'migrations' . DIRECTORY_SEPARATOR)
+            ->flatMap(function ($path) use ($filesystem) {
+                return $filesystem->glob($path . '*_create_permission_tables.php');
+            })->push(BASE_PATH . "/migrations/{$timestamp}_init_" . $server . '.php')
+            ->first();
     }
 }

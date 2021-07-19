@@ -1,10 +1,15 @@
 <?php
-declare(strict_types=1);
-// date: 2021/7/15 author: four-li
 
+declare(strict_types=1);
+/**
+ * You know, for fast.
+ *
+ * @link     https://www.open.ctl.pub
+ * @document https://doc.open.ctl.pub
+ */
 namespace FourLi\Toolkit\Aop\Aspects;
 
-use Fourli\Toolkit\Aop\Annotations\Cdebug;
+use FourLi\Toolkit\Aop\Annotations\Cdebug;
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\Di\Annotation\Aspect;
@@ -35,24 +40,28 @@ class CdebugAspect extends \Hyperf\Di\Aop\AbstractAspect
         $annotationMethods = $proceedingJoinPoint->getAnnotationMetadata()->method;
 
         if (isset($annotationMethods[Cdebug::class])) {
-            /** @var Cdebug $apiLogMethod */
-            $apiLogMethod = $annotationMethods[Cdebug::class];
+            /** @var Cdebug $cdebug */
+            $cdebug = $annotationMethods[Cdebug::class];
 
             $env = $this->config->get('toolkit.app_env');
-            // 生产环境下，默认关闭调试
-            if ($apiLogMethod->prodClosed && $env == 'prod') {
+            $config = $this->config->get('toolkit.cdebug');
+
+            // 未开启 或者 生产环境下关闭生产调试 直接执行
+            if ($config['enable'] == false || ($env == 'prod' && $config['prod_enable'] !== true)) {
                 return $proceedingJoinPoint->process();
             }
 
+            $eventName = $proceedingJoinPoint->className . '::' . $proceedingJoinPoint->methodName;
+
             try {
+                $startMem = memory_get_usage();
                 $startms = microtime(true);
-                $startmem = memory_get_usage();
                 $result = $proceedingJoinPoint->process();
                 $success = true;
             } catch (\Exception $e) {
                 $success = false;
             } finally {
-                $usedMemory = (memory_get_usage() - $startmem);
+                $usedMemory = (memory_get_usage() - $startMem);
                 $usedTime = microtime(true) - $startms;
                 if ($success) {
                     $stdlog = 'info';
@@ -69,13 +78,13 @@ class CdebugAspect extends \Hyperf\Di\Aop\AbstractAspect
                 }
 
                 // 终端输出
-                if ($apiLogMethod->stdout) {
-                    $message = '调试方法' . $proceedingJoinPoint->methodName . ' 消耗内存:[' . self::getSize($usedMemory) . ' ], 消耗时间:[' . $usedTime . ' MS]';
+                if ($config['stdout'] === true) {
+                    $message = '调试方法' . $proceedingJoinPoint->methodName . ' 消耗内存:[' . self::getSize($usedMemory) . ' ], 消耗时间:[' . round($usedTime, 3) . ' MS]';
                     $this->stdout->{$stdlog}($message);
                 }
 
                 // 记录日志
-                if ($apiLogMethod->write) {
+                if ($config['db'] === true) {
 //                    $params = $proceedingJoinPoint->arguments['keys'];
 //                    $logModel = new SysCdebugLog();
 //                    $logModel->setSerialno(Utils::genSnowflakeId())
@@ -103,7 +112,7 @@ class CdebugAspect extends \Hyperf\Di\Aop\AbstractAspect
 //                    $detailModel->save();
                 }
 
-                if (!$success) {
+                if (! $success) {
                     throw $e;
                 }
                 return $result;
