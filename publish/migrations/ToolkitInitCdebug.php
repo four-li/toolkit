@@ -9,13 +9,11 @@ declare(strict_types=1);
  */
 use Hyperf\Database\Schema\Blueprint;
 
-class InitCdebug extends \FourLi\Toolkit\Components\MigrationSchema\BaseMigration
+class ToolkitInitCdebug extends \FourLi\Toolkit\Components\MigrationSchema\BaseMigration
 {
     public function configure(): array
     {
         $enable = config('toolkit.cdebug.db');
-
-        dump($enable);
 
         if ($enable !== true) {
             return [];

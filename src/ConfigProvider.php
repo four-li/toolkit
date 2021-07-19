@@ -42,7 +42,7 @@ class ConfigProvider
                 [
                     'id' => 'cdebug entity',
                     'description' => 'cdebug entity magiration..',
-                    'source' => __DIR__ . '/../publish/migrations/cdebug.php',
+                    'source' => __DIR__ . '/../publish/migrations/ToolkitInitCdebug.php',
                     'destination' => $this->getMigrationFileName('cdebug'),
                 ],
             ],
