@@ -9,6 +9,7 @@ declare(strict_types=1);
  */
 namespace FourLi\Toolkit;
 
+use FourLi\Toolkit\Commands\SchemaCommand;
 use Hyperf\Utils\Collection;
 use Hyperf\Utils\Filesystem\Filesystem;
 
@@ -20,7 +21,7 @@ class ConfigProvider
             'dependencies' => [
             ],
             'commands' => [
-                //                MigrationCommand::class
+                SchemaCommand::class,
             ],
             'listeners' => [],
             'annotations' => [
@@ -55,7 +56,7 @@ class ConfigProvider
         return Collection::make(BASE_PATH . DIRECTORY_SEPARATOR . 'migrations' . DIRECTORY_SEPARATOR)
             ->flatMap(function ($path) use ($filesystem) {
                 return $filesystem->glob($path . '*_create_permission_tables.php');
-            })->push(BASE_PATH . "/migrations/{$timestamp}_init_" . $server . '.php')
+            })->push(BASE_PATH . "/migrations/{$timestamp}_toolkit_init_" . $server . '.php')
             ->first();
     }
 }
