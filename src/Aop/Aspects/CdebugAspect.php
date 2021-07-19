@@ -61,7 +61,7 @@ class CdebugAspect extends \Hyperf\Di\Aop\AbstractAspect
                 $success = false;
             } finally {
                 $usedMemory = (memory_get_usage() - $startMem);
-                $usedTime = microtime(true) - $startms;
+                $usedTime = ceil((microtime(true) - $startms) * 1000);
                 if ($success) {
                     $stdlog = 'info';
                     $retval = 1;
@@ -78,7 +78,7 @@ class CdebugAspect extends \Hyperf\Di\Aop\AbstractAspect
 
                 // 终端输出
                 if ($config['stdout'] === true) {
-                    $message = '调试方法' . $proceedingJoinPoint->methodName . ' 消耗内存:[' . self::getSize($usedMemory) . ' ], 消耗时间:[' . round($usedTime, 3) . ' MS]';
+                    $message = '调试方法' . $proceedingJoinPoint->methodName . ' 消耗内存:[' . self::getSize($usedMemory) . ' ], 消耗时间:[' . $usedTime . ' MS]';
                     $this->stdout->{$stdlog}($message);
                 }
 
@@ -91,7 +91,7 @@ class CdebugAspect extends \Hyperf\Di\Aop\AbstractAspect
                             ->setClass($proceedingJoinPoint->className)
                             ->setMethod($proceedingJoinPoint->methodName)
                             ->setRetval($retval)
-                            ->setConsumeTime(ceil($usedTime * 1000))
+                            ->setConsumeTime($usedTime)
                             ->setConsumeMemory($usedMemory);
                         $logModel->save();
                     }

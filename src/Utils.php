@@ -11,6 +11,7 @@ namespace FourLi\Toolkit;
 
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\Contract\StdoutLoggerInterface;
+use Hyperf\Redis\RedisFactory;
 use Hyperf\Snowflake\IdGeneratorInterface;
 use Hyperf\Utils\ApplicationContext;
 
@@ -39,11 +40,12 @@ class Utils
      */
     public static function dumper(...$args)
     {
-        $env = self::container()->get(ConfigInterface::class)->get('toolkit.app_env', 'prod');
+        $config = self::container()->get(ConfigInterface::class);
+        $env = $config->get('toolkit.app_env', 'prod');
 
         if ($env !== 'prod') {
             if (function_exists('dump')) {
-                if (true) {
+                if ($config->get('toolkit.dump_trade')) {
                     $trace = debug_backtrace()[0];
                     self::stdLogger(sprintf('dumper in %s (%s)', $trace['file'], $trace['line']), 'notice');
                 }
@@ -60,5 +62,23 @@ class Utils
     public static function genSnowflakeId()
     {
         return self::container()->get(IdGeneratorInterface::class)->generate();
+    }
+
+    /**
+     * - 【 redis 】.
+     * @param mixed $redisPoolName
+     */
+    public static function redis($redisPoolName = 'default')
+    {
+        return ApplicationContext::getContainer()->get(RedisFactory::class)->get($redisPoolName);
+    }
+
+    /**
+     * - 【 日志 】.
+     * @param mixed $channel
+     */
+    public static function logger($channel = 'app')
+    {
+        return ApplicationContext::getContainer()->get(\Hyperf\Logger\LoggerFactory::class)->get($channel);
     }
 }

@@ -10,6 +10,9 @@ declare(strict_types=1);
 return [
     'app_env' => env('APP_ENV', 'prod'),
 
+    # 显示打印调用处
+    'dump_trade' => false,
+
     // cdeubg 通过注解简单分析方法的内存和耗时
     'cdebug' => [
         // 全局关闭

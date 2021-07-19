@@ -23,6 +23,7 @@
   "require": {
     "php": ">=8.0",
     "hyperf/command": "^2.2",
+    "hyperf/crontab": "^2.2",
     "hyperf/db-connection": "^2.2",
     "hyperf/di": "^2.2",
     "hyperf/framework": "^2.2",

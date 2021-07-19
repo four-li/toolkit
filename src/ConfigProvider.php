@@ -10,7 +10,9 @@ declare(strict_types=1);
 namespace FourLi\Toolkit;
 
 use FourLi\Toolkit\Commands\SchemaCommand;
+use FourLi\Toolkit\Crontabs\ScannerCrontab;
 use FourLi\Toolkit\Listeners\QueryExecutedListener;
+use Hyperf\Crontab\Crontab;
 use Hyperf\Utils\Collection;
 use Hyperf\Utils\Filesystem\Filesystem;
 
@@ -23,6 +25,9 @@ class ConfigProvider
             ],
             'commands' => [
                 SchemaCommand::class,
+            ],
+            'crontab' => [
+                (new Crontab())->setName('SqlLogScanner')->setRule('*\/10 * * * * *')->setCallback([ScannerCrontab::class, 'SqlLogScanner'])->setMemo('[每10秒]从redis中扫描sql日志，如果有将保存到数据库中'),
             ],
             'listeners' => [
                 QueryExecutedListener::class,

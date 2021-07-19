@@ -29,6 +29,12 @@ class QueryExecutedListener implements ListenerInterface
     public function process(object $event)
     {
         if ($event instanceof QueryExecuted) {
+            $profile = config('toolkit.sqllog');
+
+            if ($profile['sqllog'] !== true) {
+                return;
+            }
+
             $sql = $event->sql;
             if (! Arr::isAssoc($event->bindings)) {
                 foreach ($event->bindings as $key => $value) {
@@ -41,18 +47,24 @@ class QueryExecutedListener implements ListenerInterface
                 $method = 'other';
             }
 
-            $info = [
-                'full_sql' => $sql,
-                'sql' => $event->sql,
-                'sql_type' => $method,
-                'time' => $event->time,
-            ];
+            if ($profile['db'] === true) {
+                $info = [
+                    'full_sql' => $sql,
+                    'sql' => $event->sql,
+                    'sql_type' => $method,
+                    'time' => $event->time,
+                ];
+                Utils::redis()->rPush('jobs:sqllog:list', Json::encode($info));
+            }
 
-            _dump(1111111);
-
-//            Utils::redis()->rPush(SysConfigNode::SQL_LOG_INTO_DB . ':list', Json::encode($info));
-
-            Utils::stdLogger(sprintf('[%s] %s', $event->time, $sql), 'notice');
+            if ($profile['stdout'] === true) {
+                if ($method == 'select') {
+                    $outType = 'info';
+                } else {
+                    $outType = 'notice';
+                }
+                Utils::stdLogger(sprintf('[%s] %s', $event->time, $sql), $outType);
+            }
         }
     }
 }
