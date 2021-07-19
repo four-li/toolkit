@@ -38,7 +38,9 @@ class Utils
      */
     public static function dumper(...$args)
     {
-        if (self::container()->get(ConfigInterface::class)->get('app_env') !== 'prod') {
+        $env = self::container()->get(ConfigInterface::class)->get('toolkit.app_env', 'prod');
+
+        if ($env !== 'prod') {
             if (function_exists('dump')) {
                 if (true) {
                     $trace = debug_backtrace()[0];
@@ -46,7 +48,7 @@ class Utils
                 }
                 dump(...$args);
             } else {
-                self::stdLogger('未安装dump-server, 请执行composer require qiutuleng/hyperf-dump-server --dev -vvv', 'notice');
+                self::stdLogger('未安装dump-server, 请执行composer require symfony/var-dumper --dev -vvv', 'notice');
             }
         }
     }
