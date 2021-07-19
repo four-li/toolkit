@@ -11,6 +11,7 @@ namespace FourLi\Toolkit;
 
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\Contract\StdoutLoggerInterface;
+use Hyperf\Snowflake\IdGeneratorInterface;
 use Hyperf\Utils\ApplicationContext;
 
 class Utils
@@ -51,5 +52,13 @@ class Utils
                 self::stdLogger('未安装dump-server, 请执行composer require symfony/var-dumper --dev -vvv', 'notice');
             }
         }
+    }
+
+    /**
+     * - 【 生成id 】.
+     */
+    public static function genSnowflakeId()
+    {
+        return self::container()->get(IdGeneratorInterface::class)->generate();
     }
 }

@@ -9,7 +9,10 @@ declare(strict_types=1);
  */
 namespace FourLi\Toolkit\Aop\Aspects;
 
+use App\Model\Toolkit\SysToolkitCdebug;
+use App\Model\Toolkit\SysToolkitCdebugExt;
 use FourLi\Toolkit\Aop\Annotations\Cdebug;
+use FourLi\Toolkit\Utils;
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\Di\Annotation\Aspect;
@@ -39,17 +42,15 @@ class CdebugAspect extends \Hyperf\Di\Aop\AbstractAspect
 
         if (isset($annotationMethods[Cdebug::class])) {
             /** @var Cdebug $cdebug */
-            $cdebug = $annotationMethods[Cdebug::class];
+//            $cdebug = $annotationMethods[Cdebug::class];
+//            $eventName = $proceedingJoinPoint->className . '::' . $proceedingJoinPoint->methodName;
 
-            $env = $this->config->get('toolkit.app_env');
             $config = $this->config->get('toolkit.cdebug');
 
-            // 未开启 或者 生产环境下关闭生产调试 直接执行
-            if ($config['enable'] == false || ($env == 'prod' && $config['prod_enable'] !== true)) {
+            // 未开启
+            if ($config['enable'] !== true) {
                 return $proceedingJoinPoint->process();
             }
-
-            $eventName = $proceedingJoinPoint->className . '::' . $proceedingJoinPoint->methodName;
 
             try {
                 $startMem = memory_get_usage();
@@ -83,31 +84,35 @@ class CdebugAspect extends \Hyperf\Di\Aop\AbstractAspect
 
                 // 记录日志
                 if ($config['db'] === true) {
-//                    $params = $proceedingJoinPoint->arguments['keys'];
-//                    $logModel = new SysCdebugLog();
-//                    $logModel->setSerialno(Utils::genSnowflakeId())
-//                        ->setClass($proceedingJoinPoint->className)
-//                        ->setMethod($proceedingJoinPoint->methodName)
-//                        ->setRetval($retval)
-//                        ->setConsumeTime(ceil($time * 1000))
-//                        ->setConsumeMemory($memory);
-//                    $logModel->save();
-//
-//                    $format = [];
-//                    foreach ($params as $var => $val) {
-//                        if (is_object($val)) {
-//                            $val = [
-//                                'obj' => get_class($val),
-//                                'property' => Json::decode(Json::encode($val)),
-//                            ];
-//                        }
-//                        $format['$' . $var] = $val;
-//                    }
-//                    $detailModel = new SysCdebugDetailLog();
-//                    $detailModel->setSerialno($logModel->getSerialno())
-//                        ->setParams(Json::encode($format))
-//                        ->setResult(Json::encode($result));
-//                    $detailModel->save();
+                    $params = $proceedingJoinPoint->arguments['keys'];
+                    if (class_exists('App\Model\Toolkit\SysToolkitCdebug')) {
+                        $logModel = new SysToolkitCdebug();
+                        $logModel->setSerialno(Utils::genSnowflakeId())
+                            ->setClass($proceedingJoinPoint->className)
+                            ->setMethod($proceedingJoinPoint->methodName)
+                            ->setRetval($retval)
+                            ->setConsumeTime(ceil($usedTime * 1000))
+                            ->setConsumeMemory($usedMemory);
+                        $logModel->save();
+                    }
+
+                    $format = [];
+                    foreach ($params as $var => $val) {
+                        if (is_object($val)) {
+                            $val = [
+                                'obj' => get_class($val),
+                                'property' => Json::decode(Json::encode($val)),
+                            ];
+                        }
+                        $format['$' . $var] = $val;
+                    }
+                    if (class_exists('App\Model\Toolkit\SysToolkitCdebugExt')) {
+                        $detailModel = new SysToolkitCdebugExt();
+                        $detailModel->setSerialno($logModel->getSerialno())
+                            ->setParams(Json::encode($format))
+                            ->setResult(Json::encode($result));
+                        $detailModel->save();
+                    }
                 }
 
                 if (! $success) {

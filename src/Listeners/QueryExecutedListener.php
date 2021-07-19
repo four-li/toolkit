@@ -48,6 +48,8 @@ class QueryExecutedListener implements ListenerInterface
                 'time' => $event->time,
             ];
 
+            _dump(1111111);
+
 //            Utils::redis()->rPush(SysConfigNode::SQL_LOG_INTO_DB . ':list', Json::encode($info));
 
             Utils::stdLogger(sprintf('[%s] %s', $event->time, $sql), 'notice');

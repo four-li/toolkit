@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace FourLi\Toolkit;
 
 use FourLi\Toolkit\Commands\SchemaCommand;
+use FourLi\Toolkit\Listeners\QueryExecutedListener;
 use Hyperf\Utils\Collection;
 use Hyperf\Utils\Filesystem\Filesystem;
 
@@ -23,7 +24,9 @@ class ConfigProvider
             'commands' => [
                 SchemaCommand::class,
             ],
-            'listeners' => [],
+            'listeners' => [
+                QueryExecutedListener::class,
+            ],
             'annotations' => [
                 'scan' => [
                     'paths' => [
@@ -32,13 +35,20 @@ class ConfigProvider
                 ],
             ],
             'publish' => [
+                // autoload 配置
                 [
                     'id' => 'toolkit config',
-                    'description' => 'The config for four-li/toolkit.',
+                    'description' => '混合工具包内的配置.',
                     'source' => __DIR__ . '/../publish/toolkit.php',
                     'destination' => BASE_PATH . '/config/autoload/toolkit.php',
                 ],
-                // 数据库 migrations
+                [
+                    'id' => 'snowflake config',
+                    'description' => '雪花算法依赖组件的配置',
+                    'source' => __DIR__ . '/../publish/snowflake.php',
+                    'destination' => BASE_PATH . '/config/autoload/snowflake.php',
+                ],
+                // 数据库实体配置 migrations
                 [
                     'id' => 'cdebug entity',
                     'description' => 'cdebug entity magiration..',
